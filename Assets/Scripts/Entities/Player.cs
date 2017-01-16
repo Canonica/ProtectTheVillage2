@@ -2,13 +2,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class Player : CharacterEntity {
 
-    public GameObject lifeContainer;
-    public bool isMoving;
+   
     Animator animator;
     SpriteRenderer SprRend;
+    [Header("Characteristics")]
+    public int strength;
+    public int agility;
+
+    [Header("Minage")]
+    public float minageSpeed;
+
+    [Header("Gold")]
+    public int maxGold;
+    public int currentNbOfGold;
+
+    [Header("Other")]
+    public GameObject lifeContainer;
+    public bool isMoving;
+
+    [Header("UIText")]
+    public Text goldText;
+    public Text strengthText;
+    public Text agilityText;
+    public Text lifeText;
+
+    public NPC currentNPC;
+    public bool isNearNPC;
+
+    public bool isNearMine;
+    bool isMining;
+
+    public GameObject bomberPrefab;
+
     // Use this for initialization
     public override void Start()
     {
@@ -17,13 +46,26 @@ public class Player : CharacterEntity {
         SprRend = GetComponentInChildren<SpriteRenderer>();
         canMove = true;
         currentMoveState = MoveState.Down;
+        UpdateUI();
     }
-
 
     // Update is called once per frame
     public override void Update()
     {
         Move();
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (isNearMine && !isMining)
+            {
+                isMining = true;
+                StartCoroutine("Minage");
+            }
+            if (isNearNPC && currentNPC != null)
+            {
+                currentNPC.AddStat();
+                UpdateUI();
+            }
+        }
     }
 
     public override void Move()
@@ -87,7 +129,7 @@ public class Player : CharacterEntity {
                         SprRend.flipX = false;
                         break;
                 }
-                GetComponent<Rigidbody>().MovePosition(transform.position + move.normalized * MoveSpeed * Time.deltaTime);
+                GetComponent<Rigidbody>().MovePosition(transform.position + move.normalized * (MoveSpeed+agility) * Time.deltaTime);
                 //this.gameObject.transform.position += move.normalized * MoveSpeed * Time.deltaTime;
             }
             else
@@ -108,8 +150,54 @@ public class Player : CharacterEntity {
 
     public override void Death()
     {
-        throw new NotImplementedException();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    IEnumerator Minage()
+    {
+        canMove = false;
+        yield return new WaitForSeconds(minageSpeed - ((strength + agility)*0.05f));
+        if (isNearMine)
+        {
+            currentNbOfGold += 1;
+        }
+        UpdateGold();
+        canMove = true;
+        isMining = false;
+    }
+
+    void UpdateUI()
+    {
+        UpdateGold();
+        UpdateStrength();
+        UpdateAgility();
+        UpdateLife();
+    }
+
+    void UpdateGold()
+    {
+        goldText.text = currentNbOfGold.ToString();
+    }
+
+    void UpdateStrength()
+    {
+        strengthText.text = "Strength : "+strength.ToString();
+    }
+
+    void UpdateAgility()
+    {
+        agilityText.text = "Agility : " + agility.ToString();
+    }
+
+    void UpdateLife()
+    {
+        lifeText.text = currentLife + "/" + maxLife;
+        lifeText.transform.parent.GetComponent<Image>().fillAmount = currentLife / maxLife;
     }
 
 
+    void SpawnBomber()
+    {
+        Instantiate(bomberPrefab, transform.position, transform.rotation);
+    }
 }
