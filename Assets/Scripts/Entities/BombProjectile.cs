@@ -18,12 +18,17 @@ public class BombProjectile : MonoBehaviour
 
 	void Update()
 	{
+		if (target == null)
+		{
+			Destroy (this.gameObject);
+		}
 		transform.position = Vector3.Lerp (transform.position, target.transform.position, speed * Time.deltaTime);
 		if (Vector3.Distance (transform.position, target.transform.position) <= 0.1f)
 		{
 			if (target.GetComponent<CharacterEntity> () != null)
 			{
 				target.GetComponent<CharacterEntity> ().TakeDamage (damages);
+				Destroy (this.gameObject);
 			}
 		}
 	}
