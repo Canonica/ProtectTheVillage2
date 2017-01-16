@@ -31,6 +31,10 @@ public class BoneProjectile : MonoBehaviour {
 
     void Update()
     {
+		if (owner == null)
+		{
+			Destroy (this.gameObject);
+		}
         if (hasFinished)
         {
             float step = speed * Time.deltaTime;
