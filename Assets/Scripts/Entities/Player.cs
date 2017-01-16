@@ -28,6 +28,7 @@ public class Player : CharacterEntity {
     public Text goldText;
     public Text strengthText;
     public Text agilityText;
+    public Text bomberText;
     public Text lifeText;
 
     public NPC currentNPC;
@@ -37,7 +38,9 @@ public class Player : CharacterEntity {
     bool isMining;
 
     public GameObject bomberPrefab;
+    public int currentNbOfBomber;
 
+    public Image actionBar;
     // Use this for initialization
     public override void Start()
     {
@@ -65,6 +68,11 @@ public class Player : CharacterEntity {
                 currentNPC.AddStat();
                 UpdateUI();
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            SpawnBomber();
         }
     }
 
@@ -157,6 +165,7 @@ public class Player : CharacterEntity {
     {
         canMove = false;
         yield return new WaitForSeconds(minageSpeed - ((strength + agility)*0.05f));
+        
         if (isNearMine)
         {
             currentNbOfGold += 1;
@@ -172,6 +181,7 @@ public class Player : CharacterEntity {
         UpdateStrength();
         UpdateAgility();
         UpdateLife();
+        UpdateBomber();
     }
 
     void UpdateGold()
@@ -195,9 +205,18 @@ public class Player : CharacterEntity {
         lifeText.transform.parent.GetComponent<Image>().fillAmount = currentLife / maxLife;
     }
 
+    void UpdateBomber()
+    {
+        bomberText.text = "Bombers : "+ currentNbOfBomber;
+    }
 
     void SpawnBomber()
     {
-        Instantiate(bomberPrefab, transform.position, transform.rotation);
+        if(currentNbOfBomber > 0)
+        {
+            Instantiate(bomberPrefab, transform.position, transform.rotation);
+            currentNbOfBomber--;
+        }
+        
     }
 }

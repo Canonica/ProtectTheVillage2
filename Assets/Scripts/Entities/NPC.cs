@@ -9,7 +9,8 @@ public class NPC : CharacterEntity {
     {
         Strength,
         Agility,
-        Health
+        Health,
+        Bomber
     }
 
     public NPCType npcType;
@@ -63,6 +64,10 @@ public class NPC : CharacterEntity {
             {
                 actionText.text = "Press E to buy 1 life for " + cost + " rubis";
             }
+            else if(npcType == NPCType.Bomber)
+            {
+                actionText.text = "Press E to buy 1 bomber for " + cost + "rubis";
+            }
             
         }
     }
@@ -95,6 +100,10 @@ public class NPC : CharacterEntity {
             else if (npcType == NPCType.Health)
             {
                 player.HealDamage(1);
+            }
+            else if(npcType == NPCType.Bomber)
+            {
+                player.currentNbOfBomber += 1;
             }
             player.currentNbOfGold -= cost;
         }
