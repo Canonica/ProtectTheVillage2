@@ -70,9 +70,9 @@ public class Skeleton : CharacterEntity
         // Create the Bullet from the Bullet Prefab
         var bullet = (GameObject)Instantiate(boneProjectile, transform.position, Quaternion.Euler(0, boneRotation, 0));
 
-        //bullet.GetComponent<BoneProjectile>().damage = attackDamage;
-        //bullet.GetComponent<BoneProjectile>().owner = this;
-        //bullet.GetComponent<BoneProjectile>().DoAnimation(this.transform.position, destination);
+        bullet.GetComponent<BoneProjectile>().damage = attackDamage;
+        bullet.GetComponent<BoneProjectile>().owner = this;
+        bullet.GetComponent<BoneProjectile>().DoAnimation(this.transform.position, destination);
     }
 
     public override void Death()
